@@ -1,3 +1,8 @@
+package download;
+
+import state.AppStateManager;
+import state.BCDMContainer;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -5,16 +10,17 @@ import java.util.Objects;
 
 public class FileMerger {
 
-    public static boolean mergeChunks(BCDMContainer bcdmContainer) {
-        final String outputFilePath = "./output/" + bcdmContainer.file.getName();
-        File chunksDir = new File(bcdmContainer.chunksDirectory);
+    public static void mergeChunks() {
+        AppStateManager appStateManager = AppStateManager.getInstance();
+        BCDMContainer bcdmContainer = appStateManager.getBcdmContainer();
+        File chunksDir = new File(bcdmContainer.getChunksDirectory());
 
         List<String> chunkPaths = new ArrayList<String>();
         for (final File file: Objects.requireNonNull(chunksDir.listFiles())) {
             chunkPaths.add(file.getPath());
         }
 
-        try (FileOutputStream fos = new FileOutputStream(outputFilePath)) {
+        try (FileOutputStream fos = new FileOutputStream(bcdmContainer.getOutputDirectory())) {
             for (String cP : chunkPaths) {
                 try (FileInputStream fis = new FileInputStream(cP)) {
                     byte[] buffer = new byte[1024];
@@ -27,12 +33,12 @@ public class FileMerger {
                 }
             }
 
-            System.out.println("Chunks merged successfully into " + outputFilePath);
+            System.out.println("Chunks merged successfully into " + bcdmContainer.getOutputDirectory());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         bcdmContainer.deleteChunksDirectory();
-        return true;
+        System.out.println("Download completed successfully!");
     }
 }
