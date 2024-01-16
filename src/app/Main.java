@@ -1,5 +1,6 @@
 package app;
 
+import download.FileDownloader;
 import download.FileSplitter;
 import jdk.jshell.spi.ExecutionControl;
 import state.AppStateManager;
@@ -7,14 +8,16 @@ import state.BCDMContainer;
 import state.DownloadScreenData;
 import ui.CLIDisplay;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) throws IOException, ExecutionControl.NotImplementedException, InterruptedException {
+    public static void main(String[] args) throws IOException, ExecutionControl.NotImplementedException, InterruptedException, URISyntaxException {
         CLIDisplay.printHomeScreen();
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
@@ -26,20 +29,20 @@ public class Main {
                 testApplication();
                 break;
             case 3:
-                int[] chunkProgress = new int[50];
-                DownloadScreenData downloadData = new DownloadScreenData(
-                        "SampleFile.txt",
-                        "12323299291911",
-                        "https://example.com/samplefile.txt",
-                        "/downloads/chunks",
-                        "/output/directory",
-                        chunkProgress
-                );
-
-                CLIDisplay.displayDownloadScreen(downloadData, true);
+                testApplicationOnline();
             default:
                 break;
         }
+    }
+
+    private static void testApplicationOnline() throws URISyntaxException, MalformedURLException {
+        AppStateManager appStateManager = AppStateManager.getInstance();
+
+//        final String FILE_URL = "https://singapore.downloadtestfile.com/5GB.zip?_gl=1*6wr4fy*_ga*NjcyNzAxODQzLjE3MDQwMTQxOTc.*_ga_ZRTNSEE7YV*MTcwNDAxNDE5Ni4xLjEuMTcwNDAxNDIwOC4wLjAuMA..";
+        final String FILE_URL = "http://ipv4.download.thinkbroadband.com/50MB.zip";
+
+        URL url = new URL(FILE_URL);
+        System.out.println(FileDownloader.getFileSize(url));
     }
 
     private static void testApplication() throws IOException, InterruptedException {

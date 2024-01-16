@@ -2,6 +2,7 @@ package state;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class DownloadScreenData {
     String fileName;
@@ -93,6 +94,20 @@ public class DownloadScreenData {
         tempChkPgress[idx] = progress;
 
         setChunkProgress(tempChkPgress);
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadScreenData{" +
+                "fileName='" + fileName + '\'' +
+                ", fileSize='" + fileSize + '\'' +
+                ", fileURL='" + fileURL + '\'' +
+                ", chunksDir='" + chunksDir + '\'' +
+                ", outputDirectory='" + outputDirectory + '\'' +
+                ", chunkProgress=" + Arrays.toString(chunkProgress) +
+                ", byteLength=" + byteLength +
+                ", totalFileProgress=" + totalFileProgress +
+                '}';
     }
 
     public int updateChunkProgress(int idx) {

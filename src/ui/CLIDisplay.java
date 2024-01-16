@@ -39,6 +39,7 @@ public class CLIDisplay {
         printAtPosition("Usage: BCDM -u <url>", 12);
         printAtPosition("1. Download file from URL", 13);
         printAtPosition("2. Test Application (Scott Pilgrim Video)", 14);
+        printAtPosition("3. Test Application Online", 15);
     }
 
     public static void printAtPosition(String text, int y) {
