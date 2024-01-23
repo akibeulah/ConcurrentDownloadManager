@@ -5,6 +5,7 @@ import state.AppStateManager;
 import state.DataChangeListener;
 import ui.components.DefaultPanel;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class ItemViewerPanel extends DefaultPanel implements DataChangeListener {
@@ -20,13 +21,17 @@ public class ItemViewerPanel extends DefaultPanel implements DataChangeListener 
 
     private void refreshView() {
         this.removeAll();
-//        itemViewerHeader.setMaximumSize(new Dimension(Integer.MAX_VALUE, itemViewerHeader.getPreferredSize().height));
+        JPanel itemViewScrollPanel = new DefaultPanel(Color.GRAY, BoxLayout.Y_AXIS, false);
+        JScrollPane scrollPane = new JScrollPane(itemViewScrollPanel);
+        scrollPane.setBorder(null);
+
         this.add(new ItemViewPanel("File Name", "Size", "Status").getContainer());
+
         for (CDMFile cdmFile : AppStateManager.getInstance().getAllCDMFiles()) {
             ItemViewPanel itemViewPanel = new ItemViewPanel(cdmFile);
-            this.add(itemViewPanel.getContainer());
+            itemViewScrollPanel.add(itemViewPanel.getContainer());
         }
-
+        this.add(scrollPane);
 
         revalidate();
         repaint();

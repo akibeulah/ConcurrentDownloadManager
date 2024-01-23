@@ -7,5 +7,6 @@ public enum FileState {
     BROKEN,
     ERROR,
     COMPLETED,
-    INITIALIZING
+    INITIALIZING,
+    FINALIZING
 }

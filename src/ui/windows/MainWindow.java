@@ -1,8 +1,10 @@
 package ui.windows;
 
+import enums.FileState;
 import state.AppStateManager;
 import state.DataChangeListener;
 import ui.components.DefaultButton;
+import ui.components.DefaultImageIcon;
 import ui.components.DefaultPanel;
 import ui.components.DefaultWindow;
 import ui.panels.ItemViewerPanel;
@@ -18,6 +20,7 @@ public class MainWindow implements DataChangeListener {
     JButton playIcon;
     JButton viewIcon;
     JButton fileButton;
+
     public MainWindow() {
         AppStateManager appStateManager = AppStateManager.getInstance();
         DefaultWindow defaultWindow = new DefaultWindow("BCDM");
@@ -67,7 +70,12 @@ public class MainWindow implements DataChangeListener {
         playIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                appStateManager.getCDMFile(appStateManager.getSelectedCDMFile()).startDownload();
+                if (appStateManager.getCDMFile(appStateManager.getSelectedCDMFile()).getFileState() != FileState.PAUSED)
+                    appStateManager.getCDMFile(appStateManager.getSelectedCDMFile()).pauseDownload();
+                else
+                    appStateManager.getCDMFile(appStateManager.getSelectedCDMFile()).startDownload();
+
+                appStateManager.notifyDataChangeListeners();
             }
         });
 
@@ -88,7 +96,13 @@ public class MainWindow implements DataChangeListener {
 
     @Override
     public void onDataChanged() {
-        playIcon.setEnabled(AppStateManager.getInstance().getSelectedCDMFile() != null);
-        viewIcon.setEnabled(AppStateManager.getInstance().getSelectedCDMFile() != null);
+        AppStateManager appStateManager = AppStateManager.getInstance();
+        playIcon.setEnabled(appStateManager.getSelectedCDMFile() != null);
+        if (appStateManager.getSelectedCDMFile() != null && appStateManager.getCDMFile(appStateManager.getSelectedCDMFile()).getFileState() != FileState.PAUSED) {
+            playIcon.setIcon(new DefaultImageIcon("src/ui/components/assets/pause.png", 35, 35).getImageIcon());
+        } else {
+            playIcon.setIcon(new DefaultImageIcon("src/ui/components/assets/play.png", 35, 35).getImageIcon());
+        }
+        viewIcon.setEnabled(appStateManager.getSelectedCDMFile() != null);
     }
 }

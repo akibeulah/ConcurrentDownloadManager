@@ -1,7 +1,9 @@
 package models;
 
+import app.AppLogger;
 import app.FileDownloader;
 import enums.FileState;
+import state.AppStateManager;
 
 import java.io.IOException;
 import java.io.Serial;
@@ -10,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -17,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static utils.Utilities.*;
@@ -32,8 +37,9 @@ public class CDMFile implements Serializable {
     private List<Chunk> chunks;
     private String chunksPath;
     private String outputPath;
-    private int progress;
-    private FileState fileState;
+    private transient FileState fileState = FileState.INITIALIZING;
+    private boolean finalized = false;
+    private transient List<Future<Void>> futureList;
 
     public CDMFile(String url) throws URISyntaxException, IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
@@ -51,8 +57,17 @@ public class CDMFile implements Serializable {
         if (connection.getResponseCode() / 100 == 2) {
             this.size = connection.getContentLength();
             this.name = url.split("/")[url.split("/").length - 1];
+            Path path;
 
-            Path path = Paths.get(chunksPath + String.format("%s", name));
+            try {
+                if (name.length() > 20)
+                    throw new InvalidPathException("", "Name too long!");
+                path = Paths.get(chunksPath + String.format("%s", name));
+            } catch (InvalidPathException e) {
+                AppLogger.warning("Illegal name, using ID");
+                this.name = ID;
+                path = Paths.get(chunksPath + String.format("%s", ID));
+            }
             Files.createDirectories(path.getParent());
 
             long chunkSize = (long) Math.ceil((double) size / NUM_THREADS_AND_CHUNKS);
@@ -74,12 +89,11 @@ public class CDMFile implements Serializable {
         } else {
             this.size = -1;
             this.name = String.valueOf(UUID.randomUUID());
-            System.out.println(connection);
-            System.out.println("Unable to retrieve file information. Server response code: " + connection.getResponseCode());
+            AppLogger.warning(String.valueOf(connection));
+            AppLogger.warning("Unable to retrieve file information. Server response code: " + connection.getResponseCode());
         }
 
         this.outputPath = String.format("%s%s_%s", OUTPUT_DIR, timeStamp, name);
-        this.progress = 0;
         this.fileState = FileState.INITIALIZING;
 
         connection.disconnect();
@@ -100,6 +114,22 @@ public class CDMFile implements Serializable {
 
     public String getUrl() {
         return url;
+    }
+
+    public boolean isFinalized() {
+        return finalized;
+    }
+
+    public void setFinalized(boolean finalized) {
+        this.finalized = finalized;
+    }
+
+    public List<Future<Void>> getFutureList() {
+        return futureList;
+    }
+
+    public void setFutureList(List<Future<Void>> futureList) {
+        this.futureList = futureList;
     }
 
     public void setUrl(String url) {
@@ -146,10 +176,6 @@ public class CDMFile implements Serializable {
         this.outputPath = outputPath;
     }
 
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
-
     public FileState getFileState() {
         return fileState;
     }
@@ -163,12 +189,32 @@ public class CDMFile implements Serializable {
         this.chunks.forEach((chunk) -> {
             res.addAndGet(chunk.getProgress());
         });
-
         return res.get() / NUM_THREADS_AND_CHUNKS;
+    }
+
+    public boolean areChunksCompleted() {
+        AtomicBoolean res = new AtomicBoolean(true);
+        javaIsSoWeirdForThisForLoopLabelThingThatIJustReadAbout:
+        for (Chunk chunk : this.chunks) {
+            if (chunk.getProgress() != 100) {
+                res.set(false);
+                break;
+            }
+        }
+
+        return res.get();
     }
 
     public void startDownload() {
         FileDownloader.downloadFile(this);
+    }
+
+    public void pauseDownload() {
+        FileDownloader.pauseDownload(this);
+    }
+
+    public void resumeDownload() {
+        FileDownloader.resumeDownload(this);
     }
 
     @Override
@@ -182,8 +228,43 @@ public class CDMFile implements Serializable {
                 "chunks=" + chunks.toString().replaceAll("\n", "\n\t\t") + ",\n\t" +
                 "chunksPath='" + chunksPath + '\'' + ",\n\t" +
                 "outputPath='" + outputPath + '\'' + ",\n\t" +
-                "progress=" + progress + ",\n\t" +
+                "progress=" + getProgress() + ",\n\t" +
                 "fileState=" + fileState + "\n" +
                 '}' + "\n";
+    }
+
+    public void checkData() {
+        AppLogger.info("Checking data: " + ID);
+        try {
+            if (this.areChunksCompleted()) {
+                AppLogger.info("CDMFile Finalizing: " + ID);
+                setFileState(FileState.FINALIZING);
+                AppStateManager.getInstance().notifyDataChangeListeners();
+                FileDownloader.mergeChunks(this);
+            } else {
+                if (this.getFileState() == FileState.DOWNLOADING)
+                    this.resumeDownload();
+            }
+        } catch (Exception e) {
+            setFileState(FileState.ERROR);
+        }
+    }
+
+    public void checkIfReadyForMerging() {
+        AppLogger.info("Checking data: " + ID);
+        try {
+            if (this.areChunksCompleted()) {
+                AppLogger.info("CDMFile Finalizing: " + ID);
+                setFileState(FileState.FINALIZING);
+                AppStateManager.getInstance().notifyDataChangeListeners();
+                FileDownloader.mergeChunks(this);
+            }
+        } catch (Exception e) {
+            setFileState(FileState.ERROR);
+        }
+    }
+
+    public void cleanUp() {
+
     }
 }

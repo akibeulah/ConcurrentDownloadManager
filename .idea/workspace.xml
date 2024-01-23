@@ -5,21 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f98f39ec-cec8-4d7c-975b-aa80f2ae9654" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/FileDownloader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/components/assets/view.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/AppLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ui/components/CDMProgressBar.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/FileDownloader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/FileDownloader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/enums/FileState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/FileState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/CDMFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/CDMFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/Chunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Chunk.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/AppStateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/AppStateManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/CDMFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/CDMFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/Chunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Chunk.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/components/DefaultButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/DefaultButton.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/components/DefaultWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/DefaultWindow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/panels/ItemViewPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/panels/ItemViewPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/panels/ItemViewerPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/panels/ItemViewerPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/windows/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/windows/MainWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/windows/NewDownloadWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/windows/NewDownloadWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tmp/CDM_BIN" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +50,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Logger.executor": "Run",
     "Application.Main.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -74,8 +72,24 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Projects\__native\ConcurrentDownloadManager\src\ui\components\assets" />
     </key>
+    <key name="ExtractSuperBase.RECENT_KEYS">
+      <recent name="ui.components" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Logger" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="app.Logger" />
+      <module name="ConcurrentDownloadManager" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="app.Main" />
       <module name="ConcurrentDownloadManager" />
@@ -92,6 +106,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.Logger" />
       </list>
     </recent_temporary>
   </component>
@@ -111,11 +126,21 @@
       <option name="presentableId" value="Default" />
       <updated>1705764797235</updated>
       <workItem from="1705764798327" duration="4801000" />
-      <workItem from="1705793060008" duration="46893000" />
+      <workItem from="1705793060008" duration="69777000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.Exception" package="java.lang" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

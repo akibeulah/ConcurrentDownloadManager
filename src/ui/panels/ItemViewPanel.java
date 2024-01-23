@@ -1,7 +1,9 @@
 package ui.panels;
 
+import enums.FileState;
 import models.CDMFile;
 import state.AppStateManager;
+import ui.components.CDMProgressBar;
 import ui.components.DefaultButton;
 import ui.components.DefaultPanel;
 
@@ -22,9 +24,9 @@ public class ItemViewPanel {
     private final JLabel statusLabel;
     JButton hackButton;
 
-    // Constructor for the case without CDMFile
     public ItemViewPanel(String fileName, String size, String status) {
         container = new DefaultPanel(Color.DARK_GRAY, BoxLayout.X_AXIS, true);
+        container.setPreferredSize(new Dimension(container.getWidth(), 30));
 
         hackButton = createStyledButton();
         hackButton.setEnabled(false);
@@ -43,24 +45,65 @@ public class ItemViewPanel {
         container.add(hackButton);
     }
 
-    // Constructor for the case with CDMFile
     public ItemViewPanel(CDMFile cdmFile) {
         this.cdmFile = cdmFile;
         container = new DefaultPanel(Color.DARK_GRAY, BoxLayout.X_AXIS, false);
+        container.setPreferredSize(new Dimension(container.getWidth(), 30));
 
         hackButton = createStyledButton();
         configureButtonListeners(hackButton);
 
         fileNameLabel = createLabel(cdmFile.getName());
         sizeLabel = createLabel(String.valueOf(cdmFile.getSize()));
-        statusLabel = createLabel(String.valueOf(cdmFile.getFileState()));
+        statusLabel = createLabel(String.format("%s [%s]%%",String.valueOf(cdmFile.getFileState()), cdmFile.getProgress()));
+
+        JPanel statusPanel = new JPanel();
+        statusPanel.setBackground(Color.DARK_GRAY);
+        statusPanel.setMaximumSize(new Dimension(container.getWidth() / 5, 30));
+        if (cdmFile.getFileState() != FileState.DOWNLOADING) {
+            statusPanel.add(statusLabel);
+        } else {
+            cdmFile.checkData();
+
+            JProgressBar progressBar = new JProgressBar(0, 100);
+            progressBar.add(statusLabel);
+            progressBar.setStringPainted(true);
+            progressBar.setValue((int) cdmFile.getProgress());
+            progressBar.setBackground(Color.GRAY);
+            progressBar.setForeground(new Color(36, 151, 243));
+            progressBar.setBorder(null);
+            progressBar.setUI(new CDMProgressBar.CustomProgressBarUI());
+            statusPanel.add(progressBar);
+
+            SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    while (cdmFile.getFileState() == FileState.DOWNLOADING) {
+                        publish((int) cdmFile.getProgress());
+                        Thread.sleep(1000);
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void process(java.util.List<Integer> chunks) {
+                    for (Integer progress : chunks) {
+                        progressBar.setValue(progress);
+                        if(progress == 100) {
+                            cdmFile.checkIfReadyForMerging();
+                        }
+                    }
+                }
+            };
+            worker.execute();
+        }
 
         hackButton.add(fileNameLabel);
         hackButton.add(Box.createHorizontalGlue());
         hackButton.add(Box.createRigidArea(new Dimension(10, 0)));
         hackButton.add(sizeLabel);
         hackButton.add(Box.createRigidArea(new Dimension(10, 0)));
-        hackButton.add(statusLabel);
+        hackButton.add(statusPanel);
 
         container.add(hackButton);
     }

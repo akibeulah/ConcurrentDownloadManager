@@ -10,10 +10,11 @@ public class Chunk implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private final String path;
-    private ChunkState chunkState;
-    private String rangeStart;
-    private String rangeEnd;
+    private transient ChunkState chunkState = ChunkState.INITIALIZING;
+    private final String rangeStart;
+    private final String rangeEnd;
     private long completedSize;
+    private long pausedLength;
 
     public Chunk(String path, long completedSize, String rangeStart, String rangeEnd) {
         this.path = path;
@@ -27,6 +28,14 @@ public class Chunk implements Serializable {
         return completedSize;
     }
 
+    public long getPausedLength() {
+        return pausedLength;
+    }
+
+    public void setPausedLength(long pausedLength) {
+        this.pausedLength = pausedLength;
+    }
+
     public void setCompletedSize(long completedSize) {
         this.completedSize = completedSize;
     }
@@ -35,16 +44,8 @@ public class Chunk implements Serializable {
         return rangeStart;
     }
 
-    public void setRangeStart(String rangeStart) {
-        this.rangeStart = rangeStart;
-    }
-
     public String getRangeEnd() {
         return rangeEnd;
-    }
-
-    public void setRangeEnd(String rangeEnd) {
-        this.rangeEnd = rangeEnd;
     }
 
     public void setChunkState(ChunkState chunkState) {
@@ -56,9 +57,19 @@ public class Chunk implements Serializable {
     }
 
     public int getProgress() {
+        long length = getLength();
+        if (length == 0)
+            return 0;
+        else {
+            long res = (length * 100) / completedSize;
+            return (int) res;
+        }
+    }
+
+    public long getLength() {
         File chunk = new File(path);
         if (chunk.exists())
-            return (int) (chunk.length() / completedSize) * 100;
+            return chunk.length();
         else
             return 0;
     }
@@ -75,7 +86,8 @@ public class Chunk implements Serializable {
                 "chunkState=" + chunkState + ",\n\t" +
                 "rangeStart='" + rangeStart + '\'' + ",\n\t" +
                 "rangeEnd='" + rangeEnd + '\'' + ",\n\t" +
-                "completedSize=" + completedSize + "\n" +
-                '}' + "\n";
+                "completedSize=" + completedSize + "\n\t" +
+                "currentSize=" + getLength() + "\n" +
+                '}';
     }
 }

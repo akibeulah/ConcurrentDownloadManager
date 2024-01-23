@@ -1,5 +1,6 @@
 package state;
 
+import app.AppLogger;
 import models.CDMFile;
 import models.Chunk;
 
@@ -83,6 +84,10 @@ public class AppStateManager implements Serializable {
         return addNewUrl;
     }
 
+    public void unsafeSaveState() throws IOException {
+        saveStateToFile();
+    }
+
     public void setAddNewUrl(boolean addNewUrl) throws IOException {
         this.addNewUrl = addNewUrl;
         this.saveStateToFile();
@@ -90,13 +95,13 @@ public class AppStateManager implements Serializable {
 
     private void saveStateToFile() throws IOException {
         notifyDataChangeListeners();
-        System.out.println("Change detected...");
+        AppLogger.info("Change detected...");
         File file = new File(FILE_PATH);
         if (!file.exists()) {
             if (file.createNewFile())
-                System.out.println("Welcome to Beulah's Concurrent Download Manager!");
+                AppLogger.info("Welcome to Beulah's Concurrent Download Manager!");
             else
-                System.out.println("Welcome to Beulah's Concurrent Download Manager! There has been an error with our local data logging...");
+                AppLogger.info("Welcome to Beulah's Concurrent Download Manager! There has been an error with our local data logging...");
         }
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
@@ -108,15 +113,18 @@ public class AppStateManager implements Serializable {
 
     public static void loadStateFromFile() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+            AppLogger.info("Loading state");
             AppStateManager loadedInstance = (AppStateManager) ois.readObject();
             instance.setAllCDMFiles(loadedInstance.getAllCDMFiles());
-            instance.setSelectedCDMFile(loadedInstance.getSelectedCDMFile());
-            instance.setSelectedChunk(loadedInstance.getSelectedChunk());
             instance.setAddNewUrl(loadedInstance.isAddNewUrl());
+
+            for (CDMFile cdmFile : instance.allCDMFiles) {
+                cdmFile.checkData();
+            }
         } catch (FileNotFoundException e) {
-            // File not found, it's okay if it's the first run
+            AppLogger.warning("File not found, should be fine but might be an indicator of file storage issues...");
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace(); // Handle the exception appropriately
+            e.printStackTrace();
         }
     }
 
