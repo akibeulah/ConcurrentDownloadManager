@@ -5,22 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f98f39ec-cec8-4d7c-975b-aa80f2ae9654" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ConcurrentDownloadManager.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/enums/ChunkState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/enums/FileState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/state/AppStateManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/state/CDMFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/state/Chunk.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/state/DataChangeListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/windows/NewDownloadWindow.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/Utilities.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/FileDownloader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ui/components/assets/view.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/AppStateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/AppStateManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/CDMFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/CDMFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/Chunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Chunk.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/DefaultButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/DefaultButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/components/DefaultWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/components/DefaultWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/panels/ItemViewPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/panels/ItemViewPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/panels/ItemViewerPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/panels/ItemViewerPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/windows/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/windows/MainWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/windows/NewDownloadWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/windows/NewDownloadWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tmp/CDM_BIN" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,13 +29,16 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
@@ -49,24 +51,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\__native\ConcurrentDownloadManager\src\ui\components\assets" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="app.Main" />
@@ -103,7 +111,7 @@
       <option name="presentableId" value="Default" />
       <updated>1705764797235</updated>
       <workItem from="1705764798327" duration="4801000" />
-      <workItem from="1705793060008" duration="17155000" />
+      <workItem from="1705793060008" duration="46893000" />
     </task>
     <servers />
   </component>

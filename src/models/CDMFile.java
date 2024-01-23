@@ -1,5 +1,6 @@
-package state;
+package models;
 
+import app.FileDownloader;
 import enums.FileState;
 
 import java.io.IOException;
@@ -8,18 +9,22 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static utils.Utilities.*;
 
 public class CDMFile implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private String ID;
+    private final String ID;
     private String name;
     private String url;
     private URI uri;
@@ -47,18 +52,23 @@ public class CDMFile implements Serializable {
             this.size = connection.getContentLength();
             this.name = url.split("/")[url.split("/").length - 1];
 
+            Path path = Paths.get(chunksPath + String.format("%s", name));
+            Files.createDirectories(path.getParent());
+
             long chunkSize = (long) Math.ceil((double) size / NUM_THREADS_AND_CHUNKS);
             for (int i = 0; i < NUM_THREADS_AND_CHUNKS; i++) {
                 long startByte = i * chunkSize;
-                long endByte;
                 Chunk chunk;
-                String chunkPath = String.format("%s/CHK_%02d", chunksPath, i);
+                String chunkPath = String.format("%s/CHK_%03d", chunksPath, i);
                 if (i == NUM_THREADS_AND_CHUNKS - 1) {
                     chunk = new Chunk(chunkPath, chunkSize, String.valueOf(startByte), String.valueOf(size - 1));
                 } else {
                     chunk = new Chunk(chunkPath, chunkSize, String.valueOf(startByte), String.valueOf((i + 1) * chunkSize - 1));
                 }
                 chunks.add(chunk);
+                path = Paths.get(chunkPath);
+                Files.createDirectories(path.getParent());
+                Files.createFile(path);
             }
 
         } else {
@@ -73,14 +83,11 @@ public class CDMFile implements Serializable {
         this.fileState = FileState.INITIALIZING;
 
         connection.disconnect();
+        startDownload();
     }
 
     public String getID() {
         return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
     }
 
     public String getName() {
@@ -139,10 +146,6 @@ public class CDMFile implements Serializable {
         this.outputPath = outputPath;
     }
 
-    public int getProgress() {
-        return progress;
-    }
-
     public void setProgress(int progress) {
         this.progress = progress;
     }
@@ -155,19 +158,32 @@ public class CDMFile implements Serializable {
         this.fileState = fileState;
     }
 
+    public long getProgress() {
+        AtomicLong res = new AtomicLong();
+        this.chunks.forEach((chunk) -> {
+            res.addAndGet(chunk.getProgress());
+        });
+
+        return res.get() / NUM_THREADS_AND_CHUNKS;
+    }
+
+    public void startDownload() {
+        FileDownloader.downloadFile(this);
+    }
+
     @Override
     public String toString() {
         return "\nCDMFile{" + "\n\t" +
                 "ID='" + ID + '\'' + ",\n\t" +
-                " name='" + name + '\'' + ",\n\t" +
-                " url='" + url + '\'' + ",\n\t" +
-                " uri=" + uri + ",\n\t" +
-                " size=" + size + ",\n\t" +
-                " chunks=" + chunks + ",\n\t" +
-                " chunksPath='" + chunksPath + '\'' + ",\n\t" +
-                " outputPath='" + outputPath + '\'' + ",\n\t" +
-                " progress=" + progress + ",\n\t" +
-                " fileState=" + fileState + "\n" +
+                "name='" + name + '\'' + ",\n\t" +
+                "url='" + url + '\'' + ",\n\t" +
+                "uri=" + uri + ",\n\t" +
+                "size=" + size + ",\n\t" +
+                "chunks=" + chunks.toString().replaceAll("\n", "\n\t\t") + ",\n\t" +
+                "chunksPath='" + chunksPath + '\'' + ",\n\t" +
+                "outputPath='" + outputPath + '\'' + ",\n\t" +
+                "progress=" + progress + ",\n\t" +
+                "fileState=" + fileState + "\n" +
                 '}' + "\n";
     }
 }

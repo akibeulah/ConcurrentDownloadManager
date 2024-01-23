@@ -1,8 +1,12 @@
 package state;
 
+import models.CDMFile;
+import models.Chunk;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static utils.Utilities.FILE_PATH;
 
@@ -11,19 +15,29 @@ public class AppStateManager implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final AppStateManager instance = new AppStateManager();
     private List<CDMFile> allCDMFiles = new ArrayList<CDMFile>();
-    private String selectedCDMFile;
-    private Chunk selectedChunk;
+    private transient String selectedCDMFile = null;
+    private transient Chunk selectedChunk;
     private boolean addNewUrl = false;
-    private final List<DataChangeListener> dataChangeListeners = new ArrayList<>();
+    private transient final List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
     public void addDataChangeListener(DataChangeListener listener) {
         dataChangeListeners.add(listener);
     }
 
-    private void notifyDataChangeListeners() {
-        for (DataChangeListener listener : dataChangeListeners) {
+    public void notifyDataChangeListeners() {
+        List<DataChangeListener> listenersCopy = new ArrayList<>(dataChangeListeners);
+
+        for (DataChangeListener listener : listenersCopy) {
             listener.onDataChanged();
         }
+    }
+
+    public int getDataChangeListeners() {
+        return dataChangeListeners.size();
+    }
+
+    public CDMFile getCDMFile(String id) {
+        return allCDMFiles.stream().filter(file -> Objects.equals(file.getID(), id)).findFirst().orElse(null);
     }
 
     private AppStateManager() {
@@ -76,6 +90,7 @@ public class AppStateManager implements Serializable {
 
     private void saveStateToFile() throws IOException {
         notifyDataChangeListeners();
+        System.out.println("Change detected...");
         File file = new File(FILE_PATH);
         if (!file.exists()) {
             if (file.createNewFile())
@@ -108,7 +123,7 @@ public class AppStateManager implements Serializable {
     @Override
     public String toString() {
         return "\nAppStateManager{" + "\n\t" +
-                "allCDMFiles=" + allCDMFiles + ",\n\t" +
+                "allCDMFiles=" + allCDMFiles.toString().replaceAll("\n", "\n\t\t") + ",\n\t" +
                 "selectedCDMFile=" + selectedCDMFile + ",\n\t" +
                 "selectedChunk=" + selectedChunk + ",\n\t" +
                 "addNewUrl=" + addNewUrl + "\n" +

@@ -1,6 +1,7 @@
 package ui.components;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 
 public class DefaultButton {
@@ -16,20 +17,29 @@ public class DefaultButton {
         this.jButton.setFocusable(false);
         this.jButton.setBorder(null);
         this.jButton.setVerticalAlignment(JLabel.CENTER);
+
+        this.jButton.setUI(new CustomButtonUI());
     }
 
     public DefaultButton(String label) {
         this.jButton = new JButton();
 
         this.jButton.setText(label);
-        this.jButton.setText(label);
-        this.jButton.setBackground(Color.DARK_GRAY);
-        this.jButton.setForeground(Color.WHITE);
         this.jButton.setFocusable(false);
-        this.jButton.setBorder(null);
+
+        this.jButton.setUI(new CustomButtonUI());
     }
 
     public JButton getjButton() {
         return jButton;
+    }
+
+    private static class CustomButtonUI extends BasicButtonUI {
+        @Override
+        protected void paintButtonPressed(Graphics g, AbstractButton b) {
+            g.setColor(null);
+            g.fillRect(0, 0, b.getWidth(), b.getHeight());
+            super.paintButtonPressed(g, b);
+        }
     }
 }

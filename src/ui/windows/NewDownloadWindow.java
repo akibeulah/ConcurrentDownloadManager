@@ -1,31 +1,40 @@
 package ui.windows;
 
 import state.AppStateManager;
-import state.CDMFile;
+import models.CDMFile;
 import ui.components.DefaultButton;
 import ui.components.DefaultPanel;
 import ui.components.DefaultWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class NewDownloadWindow {
-    private DefaultWindow defaultWindow;
     private final AppStateManager appStateManager;
 
     public NewDownloadWindow() throws IOException {
         this.appStateManager = AppStateManager.getInstance();
-        this.appStateManager.setAddNewUrl(true);
-        defaultWindow = new DefaultWindow("Add URL: ");
+        appStateManager.setAddNewUrl(true);
+        DefaultWindow defaultWindow = new DefaultWindow("Add URL: ");
         defaultWindow.setAlwaysOnTop(true);
         defaultWindow.setResizable(false);
         defaultWindow.setSize(400, 100);
+        defaultWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        defaultWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    appStateManager.setAddNewUrl(false);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                super.windowClosing(e);
+            }
+        });
 
         JPanel container = new DefaultPanel(Color.DARK_GRAY, BoxLayout.Y_AXIS, false);
         container.setSize(defaultWindow.getWidth(), 50);
@@ -46,7 +55,7 @@ public class NewDownloadWindow {
         addButton.setForeground(Color.WHITE);
         cancelButton.setForeground(Color.WHITE);
         addButton.setBackground(new Color(36, 151, 243));
-        cancelButton.setBackground(new Color(252, 1, 1));
+        cancelButton.setBackground(new Color(189, 2, 2));
         addButton.setFocusPainted(false);
         cancelButton.setFocusPainted(false);
         addButton.setBorderPainted(false);
@@ -76,7 +85,7 @@ public class NewDownloadWindow {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                cancelButton.setBackground(new Color(252, 1, 1));
+                cancelButton.setBackground(new Color(189, 2, 2));
             }
         });
 
@@ -90,9 +99,9 @@ public class NewDownloadWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    appStateManager.addCMDFile(new CDMFile(urlTextField.getText()));
                     ((JFrame) SwingUtilities.getWindowAncestor(addButton)).dispose();
                     appStateManager.setAddNewUrl(false);
+                    appStateManager.addCMDFile(new CDMFile(urlTextField.getText()));
                 } catch (URISyntaxException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
